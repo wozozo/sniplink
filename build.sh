@@ -36,7 +36,7 @@ fi
 # Create zip file
 echo "Creating zip file..."
 cd dist
-zip -r ../sniplink.zip . -x "*.ts" -x "*.test.js" -x "*test/*" -x "icons/*.sh" -x "icons/*.py" -x "icons/*.svg"
+zip -r ../sniplink.zip . -x "*.ts" -x "*.test.js" -x "*test/*" -x "icons/original1.png" -x "icons/*.sh"
 cd ..
 
 echo "✅ Build complete! Extension packaged as sniplink.zip"

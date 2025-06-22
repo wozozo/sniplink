@@ -1,23 +1,26 @@
 #!/bin/bash
 
-# Generate icon placeholders for Chrome extension
-# You'll need to replace these with actual icon designs
+# Generate icon files from original1.png using macOS sips command
 
-# Create SVG icon
-cat > icons/icon.svg << 'EOF'
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <rect width="128" height="128" rx="16" fill="#4285F4"/>
-  <path d="M32 48 L64 32 L96 48 L96 80 L64 96 L32 80 Z" fill="white" stroke="none"/>
-  <circle cx="64" cy="64" r="8" fill="#4285F4"/>
-</svg>
-EOF
+echo "🎨 Generating icons from original1.png..."
 
-echo "Icon placeholder created at icons/icon.svg"
-echo "Please create proper icons with your design tool and export as:"
-echo "- icon16.png (16x16)"
-echo "- icon48.png (48x48)"
-echo "- icon128.png (128x128)"
+# Check if original1.png exists
+if [ ! -f "icons/original1.png" ]; then
+    echo "Error: icons/original1.png not found!"
+    exit 1
+fi
+
+# Generate 16x16 icon
+sips -z 16 16 icons/original1.png --out icons/icon16.png
+echo "✓ Created icon16.png (16x16)"
+
+# Generate 48x48 icon
+sips -z 48 48 icons/original1.png --out icons/icon48.png
+echo "✓ Created icon48.png (48x48)"
+
+# Generate 128x128 icon
+sips -z 128 128 icons/original1.png --out icons/icon128.png
+echo "✓ Created icon128.png (128x128)"
+
 echo ""
-echo "For Chrome Store listing, also create:"
-echo "- icon440x280.png (promotional tile)"
-echo "- icon1280x800.png (screenshot size)"
+echo "✅ Icon generation complete!"
