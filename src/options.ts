@@ -18,10 +18,12 @@ async function loadSettings() {
     "customParams",
     "whitelist",
     "amazonAssociateId",
+    "disabledDefaultParams",
   ])) as StorageData;
   const customParams = result.customParams || [];
   const whitelist = result.whitelist || [];
   const amazonAssociateId = result.amazonAssociateId || "";
+  const disabledDefaultParams = result.disabledDefaultParams || [];
 
   const customParamsEl = document.getElementById("customParams") as HTMLTextAreaElement | null;
   if (customParamsEl) {
@@ -40,12 +42,35 @@ async function loadSettings() {
     amazonAssociateIdEl.value = amazonAssociateId;
   }
 
-  // Display default parameters
+  // Display default parameters with toggles
   const defaultParamsEl = document.getElementById("defaultParams");
   if (defaultParamsEl) {
-    defaultParamsEl.innerHTML = DEFAULT_TRACKING_PARAMS.map(
-      (param) => `<div class="param-item">${param}</div>`,
-    ).join("");
+    defaultParamsEl.innerHTML = DEFAULT_TRACKING_PARAMS.map((param) => {
+      const isDisabled = disabledDefaultParams.includes(param);
+      return `
+        <div class="param-toggle ${isDisabled ? "disabled" : ""}" data-param="${param}">
+          <input 
+            type="checkbox" 
+            id="param-${param}" 
+            ${isDisabled ? "" : "checked"}
+          />
+          <label for="param-${param}">${param}</label>
+        </div>
+      `;
+    }).join("");
+
+    // Add event listeners to toggles
+    defaultParamsEl.querySelectorAll(".param-toggle").forEach((toggle) => {
+      const checkbox = toggle.querySelector('input[type="checkbox"]') as HTMLInputElement;
+      const param = toggle.getAttribute("data-param");
+
+      if (checkbox && param) {
+        checkbox.addEventListener("change", () => {
+          toggleDefaultParam(param, checkbox.checked);
+          toggle.classList.toggle("disabled", !checkbox.checked);
+        });
+      }
+    });
   }
 }
 
@@ -101,6 +126,50 @@ async function saveAmazonId() {
   }
 }
 
+async function toggleDefaultParam(param: string, enabled: boolean) {
+  const result = (await chrome.storage.sync.get(["disabledDefaultParams"])) as StorageData;
+  let disabledDefaultParams = result.disabledDefaultParams || [];
+
+  if (enabled) {
+    // Remove from disabled list
+    disabledDefaultParams = disabledDefaultParams.filter((p) => p !== param);
+  } else {
+    // Add to disabled list
+    if (!disabledDefaultParams.includes(param)) {
+      disabledDefaultParams.push(param);
+    }
+  }
+
+  try {
+    await chrome.storage.sync.set({ disabledDefaultParams } as StorageData);
+    showStatus("defaultParamsStatus", "✓ Updated", "success");
+  } catch (_error) {
+    showStatus("defaultParamsStatus", "✗ Failed to update", "error");
+  }
+}
+
+async function toggleAllParams() {
+  const checkboxes = document.querySelectorAll(
+    '#defaultParams input[type="checkbox"]',
+  ) as NodeListOf<HTMLInputElement>;
+  const allChecked = Array.from(checkboxes).every((cb) => cb.checked);
+
+  if (allChecked) {
+    // Disable all
+    await chrome.storage.sync.set({
+      disabledDefaultParams: [...DEFAULT_TRACKING_PARAMS],
+    } as StorageData);
+  } else {
+    // Enable all
+    await chrome.storage.sync.set({
+      disabledDefaultParams: [],
+    } as StorageData);
+  }
+
+  // Reload to update UI
+  loadSettings();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   loadSettings();
 
@@ -118,6 +187,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const saveAmazonIdBtn = document.getElementById("saveAmazonId");
   if (saveAmazonIdBtn) {
     saveAmazonIdBtn.addEventListener("click", saveAmazonId);
+  }
+
+  const toggleAllBtn = document.getElementById("toggleAllParams");
+  if (toggleAllBtn) {
+    toggleAllBtn.addEventListener("click", toggleAllParams);
   }
 
   // Auto-save on input with debounce

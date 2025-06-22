@@ -3,6 +3,7 @@ export interface StorageData {
   whitelist?: string[];
   darkMode?: boolean;
   amazonAssociateId?: string;
+  disabledDefaultParams?: string[];
 }
 
 export interface CleanUrlResult {

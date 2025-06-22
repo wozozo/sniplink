@@ -2,9 +2,19 @@ import { DEFAULT_TRACKING_PARAMS } from "./constants.js";
 import type { CleanUrlResult, StorageData } from "./types.js";
 
 export async function getTrackingParams(): Promise<string[]> {
-  const result = (await chrome.storage.sync.get(["customParams"])) as StorageData;
+  const result = (await chrome.storage.sync.get([
+    "customParams",
+    "disabledDefaultParams",
+  ])) as StorageData;
   const customParams = result.customParams || [];
-  return [...DEFAULT_TRACKING_PARAMS, ...customParams];
+  const disabledDefaultParams = result.disabledDefaultParams || [];
+
+  // Filter out disabled default parameters
+  const activeDefaultParams = DEFAULT_TRACKING_PARAMS.filter(
+    (param) => !disabledDefaultParams.includes(param),
+  );
+
+  return [...activeDefaultParams, ...customParams];
 }
 
 export async function cleanUrl(urlString: string): Promise<CleanUrlResult> {
