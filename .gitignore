@@ -11,3 +11,6 @@ src/*.js
 src/*.js.map
 
 *.zip
+
+# Claude settings
+.claude/settings.local.json
