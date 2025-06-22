@@ -1,0 +1,24 @@
+{
+  "name": "sniplink",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check ./src",
+    "format": "biome format ./src --write",
+    "check": "biome check --write ./src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0",
+  "devDependencies": {
+    "@biomejs/biome": "^2.0.4",
+    "@types/chrome": "^0.0.326",
+    "typescript": "^5.8.3"
+  }
+}

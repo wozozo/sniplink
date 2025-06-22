@@ -1,0 +1,11 @@
+node_modules/
+dist/
+build/
+*.log
+.DS_Store
+.pnpm-debug.log*
+pnpm-lock.yaml
+
+# Generated JavaScript files
+src/*.js
+src/*.js.map

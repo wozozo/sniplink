@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SnipLink</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>SnipLink</h1>
+    <div id="status" class="status"></div>
+    
+    <div class="url-section">
+      <label>Original URL:</label>
+      <div class="url-display" id="originalUrl"></div>
+    </div>
+    
+    <div class="url-section">
+      <label>Clean URL:</label>
+      <div class="url-display" id="cleanUrl"></div>
+    </div>
+    
+    <div class="removed-params" id="removedParams"></div>
+    
+    <a href="#" id="settingsLink" class="settings-link">Settings</a>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

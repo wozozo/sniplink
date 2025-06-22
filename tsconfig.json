@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "es2015",
+    "lib": ["es2015", "dom", "dom.iterable"],
+    "allowJs": true,
+    "checkJs": true,
+    "outDir": "./src",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "types": ["chrome"],
+    "noEmit": false,
+    "sourceMap": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "src/constants.ts"]
+}
