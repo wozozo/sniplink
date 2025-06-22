@@ -18,7 +18,7 @@
 
 ## Screenshots
 
-<img src="screenshot/screenshot.jpg" alt="SnipLink popup interface">
+<img src="screenshot/screenshot.png" alt="SnipLink popup interface">
 
 ## Installation
 
