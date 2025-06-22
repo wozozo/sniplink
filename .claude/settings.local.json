@@ -17,7 +17,13 @@
       "Bash(pnpm lint:*)",
       "Bash(pnpm check:*)",
       "Bash(pnpm biome check:*)",
-      "Bash(pnpm format:*)"
+      "Bash(pnpm format:*)",
+      "Bash(chmod:*)",
+      "Bash(./icons/generate-icons.sh:*)",
+      "Bash(python3:*)",
+      "Bash(./icons/create-simple-icons.sh:*)",
+      "Bash(./build.sh)",
+      "Bash(unzip:*)"
     ],
     "deny": []
   }

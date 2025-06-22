@@ -12,7 +12,9 @@
     "check": "biome check --write ./src",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "package": "pnpm build && pnpm package:zip",
+    "package:zip": "cd dist && zip -r ../sniplink.zip . && cd .. && echo 'Extension packaged as sniplink.zip'"
   },
   "keywords": [],
   "author": "",

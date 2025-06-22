@@ -9,3 +9,5 @@ pnpm-lock.yaml
 # Generated JavaScript files
 src/*.js
 src/*.js.map
+
+*.zip
