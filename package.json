@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
+    "build": "./scripts/build.sh",
+    "build:tsc": "tsc",
+    "watch": "./scripts/watch.sh",
+    "watch:tsc": "tsc --watch",
     "typecheck": "tsc --noEmit",
     "lint": "biome check ./src",
     "format": "biome format ./src --write",
@@ -13,8 +15,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "copy:icons": "mkdir -p src/icons && cp icons/*.png src/icons/",
-    "package": "pnpm build && pnpm package:zip",
-    "package:zip": "cd dist && zip -r ../sniplink.zip . && cd .. && echo 'Extension packaged as sniplink.zip'"
+    "package": "pnpm build && cd dist && zip -r ../sniplink.zip . -x '*.DS_Store' && cd .. && echo 'Extension packaged as sniplink.zip'"
   },
   "keywords": [],
   "author": "",

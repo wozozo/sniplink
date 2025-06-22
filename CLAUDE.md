@@ -32,6 +32,9 @@ pnpm test
 
 # Run tests with UI
 pnpm test:ui
+
+# Package extension as zip file
+pnpm package
 ```
 
 ## Architecture

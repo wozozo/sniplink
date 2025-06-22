@@ -16,6 +16,10 @@
   - Popup interface
   - Right-click context menu on links/pages
 
+## Screenshots
+
+<img src="screenshot/screenshot.jpg" alt="SnipLink popup interface">
+
 ## Installation
 
 ### From Chrome Web Store
@@ -73,6 +77,9 @@ pnpm test
 
 # Run tests with UI
 pnpm test:ui
+
+# Package extension as zip file
+pnpm package
 ```
 
 ### Project Structure
