@@ -15,7 +15,14 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "copy:icons": "mkdir -p src/icons && cp icons/*.png src/icons/",
-    "package": "pnpm build && cd dist && zip -r ../sniplink.zip . -x '*.DS_Store' && cd .. && echo 'Extension packaged as sniplink.zip'"
+    "package": "pnpm build && cd dist && zip -r ../sniplink.zip . -x '*.DS_Store' && cd .. && echo 'Extension packaged as sniplink.zip'",
+    "version:patch": "pnpm version patch --no-git-tag-version",
+    "version:minor": "pnpm version minor --no-git-tag-version",
+    "version:major": "pnpm version major --no-git-tag-version",
+    "release:patch": "pnpm version:patch && pnpm release:tag",
+    "release:minor": "pnpm version:minor && pnpm release:tag",
+    "release:major": "pnpm version:major && pnpm release:tag",
+    "release:tag": "git add package.json && git commit -m \"chore: release v$(node -p \"require('./package.json').version\")\" && git tag -a v$(node -p \"require('./package.json').version\") -m \"Release version $(node -p \"require('./package.json').version\")\""
   },
   "keywords": [],
   "author": "",
