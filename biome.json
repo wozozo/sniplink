@@ -24,6 +24,9 @@
     }
   },
   "files": {
-    "includes": ["src/**/*.ts", "src/**/*.js", "src/**/*.json"]
+    "includes": ["src/**/*.ts", "src/**/*.json"]
+  },
+  "javascript": {
+    "globals": ["chrome", "vi"]
   }
 }

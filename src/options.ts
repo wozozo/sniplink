@@ -1,57 +1,19 @@
-(() => {
-const DEFAULT_TRACKING_PARAMS = [
-  "utm_source",
-  "utm_medium",
-  "utm_campaign",
-  "utm_term",
-  "utm_content",
-  "utm_id",
-  "utm_cid",
-  "utm_reader",
-  "utm_referrer",
-  "utm_name",
-  "utm_social",
-  "utm_social-type",
-  "fbclid",
-  "gclid",
-  "dclid",
-  "twclid",
-  "msclkid",
-  "mc_cid",
-  "mc_eid",
-  "pk_campaign",
-  "pk_kwd",
-  "pk_source",
-  "pk_medium",
-  "piwik_campaign",
-  "piwik_kwd",
-  "affiliate",
-  "ref",
-  "referrer",
-  "source",
-  "spm",
-  "partner",
-  "promo",
-  "campaign",
-  "ad",
-  "agid",
-  "kwid",
-  "adid",
-  "cid",
-  "sid",
-  "pid",
-  "aid",
-  "bid",
-  "vid",
-] as const
+import { DEFAULT_TRACKING_PARAMS } from "./constants.js"
+import type { StorageData } from "./types.js"
 
 async function loadSettings() {
-  const result = await chrome.storage.sync.get(["customParams"])
+  const result = (await chrome.storage.sync.get(["customParams", "whitelist"])) as StorageData
   const customParams = result.customParams || []
+  const whitelist = result.whitelist || []
 
   const customParamsEl = document.getElementById("customParams") as HTMLTextAreaElement | null
   if (customParamsEl) {
     customParamsEl.value = customParams.join("\n")
+  }
+
+  const whitelistEl = document.getElementById("whitelist") as HTMLTextAreaElement | null
+  if (whitelistEl) {
+    whitelistEl.value = whitelist.join("\n")
   }
 
   // Display default parameters
@@ -67,16 +29,25 @@ async function loadSettings() {
 
 async function saveSettings() {
   const customParamsEl = document.getElementById("customParams") as HTMLTextAreaElement | null
+  const whitelistEl = document.getElementById("whitelist") as HTMLTextAreaElement | null
+
   if (!customParamsEl) {
     return
   }
+
   const customParamsText = customParamsEl.value
   const customParams = customParamsText
     .split("\n")
-    .map((param: string) => param.trim())
-    .filter((param: string) => param.length > 0)
+    .map((param) => param.trim())
+    .filter((param) => param.length > 0)
 
-  await chrome.storage.sync.set({ customParams })
+  const whitelistText = whitelistEl?.value || ""
+  const whitelist = whitelistText
+    .split("\n")
+    .map((domain) => domain.trim())
+    .filter((domain) => domain.length > 0)
+
+  await chrome.storage.sync.set({ customParams, whitelist } as StorageData)
 
   const status = document.getElementById("status")
   if (status) {
@@ -106,4 +77,3 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 })
-})()

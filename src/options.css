@@ -52,7 +52,7 @@ h2 {
   margin: 0 0 16px 0;
 }
 
-#customParams {
+#customParams, #whitelist {
   width: 100%;
   padding: 12px;
   border: 1px solid #d1d5db;
@@ -63,7 +63,7 @@ h2 {
   box-sizing: border-box;
 }
 
-#customParams:focus {
+#customParams:focus, #whitelist:focus {
   outline: none;
   border-color: #4f46e5;
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
@@ -118,4 +118,101 @@ h2 {
   border-radius: 16px;
   font-size: 13px;
   font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+}
+
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #111827;
+  }
+  
+  .section {
+    background-color: #1f2937;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+  
+  h2 {
+    color: #e5e7eb;
+  }
+  
+  .description {
+    color: #9ca3af;
+  }
+  
+  #customParams, #whitelist {
+    background-color: #374151;
+    color: #e5e7eb;
+    border-color: #4b5563;
+  }
+  
+  #customParams:focus, #whitelist:focus {
+    border-color: #818cf8;
+    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
+  }
+  
+  .save-btn {
+    background-color: #6366f1;
+    border-color: #6366f1;
+  }
+  
+  .save-btn:hover {
+    background-color: #4f46e5;
+  }
+  
+  .save-btn:active {
+    background-color: #4338ca;
+  }
+  
+  .param-tag {
+    background-color: #374151;
+    color: #d1d5db;
+  }
+}
+
+body.dark-mode {
+  background-color: #111827;
+}
+
+body.dark-mode .section {
+  background-color: #1f2937;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode h2 {
+  color: #e5e7eb;
+}
+
+body.dark-mode .description {
+  color: #9ca3af;
+}
+
+body.dark-mode #customParams,
+body.dark-mode #whitelist {
+  background-color: #374151;
+  color: #e5e7eb;
+  border-color: #4b5563;
+}
+
+body.dark-mode #customParams:focus,
+body.dark-mode #whitelist:focus {
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
+}
+
+body.dark-mode .save-btn {
+  background-color: #6366f1;
+  border-color: #6366f1;
+}
+
+body.dark-mode .save-btn:hover {
+  background-color: #4f46e5;
+}
+
+body.dark-mode .save-btn:active {
+  background-color: #4338ca;
+}
+
+body.dark-mode .param-tag {
+  background-color: #374151;
+  color: #d1d5db;
 }

@@ -1,76 +1,5 @@
-(() => {
-const DEFAULT_TRACKING_PARAMS = [
-  "utm_source",
-  "utm_medium",
-  "utm_campaign",
-  "utm_term",
-  "utm_content",
-  "utm_id",
-  "utm_cid",
-  "utm_reader",
-  "utm_referrer",
-  "utm_name",
-  "utm_social",
-  "utm_social-type",
-  "fbclid",
-  "gclid",
-  "dclid",
-  "twclid",
-  "msclkid",
-  "mc_cid",
-  "mc_eid",
-  "pk_campaign",
-  "pk_kwd",
-  "pk_source",
-  "pk_medium",
-  "piwik_campaign",
-  "piwik_kwd",
-  "affiliate",
-  "ref",
-  "referrer",
-  "source",
-  "spm",
-  "partner",
-  "promo",
-  "campaign",
-  "ad",
-  "agid",
-  "kwid",
-  "adid",
-  "cid",
-  "sid",
-  "pid",
-  "aid",
-  "bid",
-  "vid",
-] as const
-
-async function getTrackingParams() {
-  const result = await chrome.storage.sync.get(["customParams"])
-  const customParams = result.customParams || []
-  return [...DEFAULT_TRACKING_PARAMS, ...customParams]
-}
-
-async function cleanUrl(urlString: string): Promise<{ cleanUrl: string; removedParams: string[] }> {
-  try {
-    const url = new URL(urlString)
-    const params = new URLSearchParams(url.search)
-    const trackingParams = await getTrackingParams()
-    const removedParams: string[] = []
-
-    trackingParams.forEach((param) => {
-      if (params.has(param)) {
-        removedParams.push(`${param}=${params.get(param)}`)
-        params.delete(param)
-      }
-    })
-
-    url.search = params.toString()
-    return { cleanUrl: url.toString(), removedParams }
-  } catch (_e) {
-    return { cleanUrl: urlString, removedParams: [] }
-  }
-}
+import { addToHistory, cleanUrl } from "./shared.js"
+import type { CleanUrlResult } from "./types.js"
 
 async function getCurrentTab() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
@@ -97,6 +26,11 @@ async function init() {
   // Copy to clipboard immediately
   const success = await copyToClipboard(result.cleanUrl)
 
+  // Add to history if successful and parameters were removed
+  if (success && result.removedParams.length > 0) {
+    await addToHistory(tab.url, result.cleanUrl, result.removedParams)
+  }
+
   // Update UI elements
   const status = document.getElementById("status")
   const originalUrlEl = document.getElementById("originalUrl")
@@ -114,11 +48,14 @@ async function init() {
 
   // Display status
   if (status) {
-    if (success) {
+    if (result.error) {
+      status.textContent = `✗ Error: ${result.error}`
+      status.className = "status error"
+    } else if (success) {
       status.textContent = "✓ Copied to clipboard"
       status.className = "status success"
     } else {
-      status.textContent = "✗ Failed to copy"
+      status.textContent = "✗ Failed to copy to clipboard"
       status.className = "status error"
     }
   }
@@ -144,7 +81,73 @@ async function init() {
       chrome.runtime.openOptionsPage()
     })
   }
+
+  // History link event
+  const historyLink = document.getElementById("historyLink")
+  if (historyLink) {
+    historyLink.addEventListener("click", (e) => {
+      e.preventDefault()
+      chrome.tabs.create({ url: chrome.runtime.getURL("src/history.html") })
+    })
+  }
+
+  // Edit functionality
+  const editBtn = document.getElementById("editBtn") as HTMLButtonElement | null
+  const saveBtn = document.getElementById("saveBtn") as HTMLButtonElement | null
+  const cancelBtn = document.getElementById("cancelBtn") as HTMLButtonElement | null
+  const cleanUrlInput = document.getElementById("cleanUrlInput") as HTMLInputElement | null
+
+  if (editBtn && saveBtn && cancelBtn && cleanUrlInput && cleanUrlEl) {
+    editBtn.addEventListener("click", () => {
+      cleanUrlInput.value = result.cleanUrl
+      cleanUrlEl.style.display = "none"
+      cleanUrlInput.style.display = "block"
+      editBtn.style.display = "none"
+      saveBtn.style.display = "inline-block"
+      cancelBtn.style.display = "inline-block"
+      cleanUrlInput.focus()
+      cleanUrlInput.select()
+    })
+
+    cancelBtn.addEventListener("click", () => {
+      cleanUrlEl.style.display = "block"
+      cleanUrlInput.style.display = "none"
+      editBtn.style.display = "inline-block"
+      saveBtn.style.display = "none"
+      cancelBtn.style.display = "none"
+    })
+
+    saveBtn.addEventListener("click", async () => {
+      const newUrl = cleanUrlInput.value.trim()
+      if (newUrl) {
+        const success = await copyToClipboard(newUrl)
+        if (status) {
+          if (success) {
+            status.textContent = "✓ Copied edited URL to clipboard"
+            status.className = "status success"
+          } else {
+            status.textContent = "✗ Failed to copy edited URL"
+            status.className = "status error"
+          }
+        }
+        cleanUrlEl.textContent = newUrl
+      }
+      cleanUrlEl.style.display = "block"
+      cleanUrlInput.style.display = "none"
+      editBtn.style.display = "inline-block"
+      saveBtn.style.display = "none"
+      cancelBtn.style.display = "none"
+    })
+
+    // Save on Enter key
+    cleanUrlInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        saveBtn.click()
+      } else if (e.key === "Escape") {
+        cancelBtn.click()
+      }
+    })
+  }
 }
 
 document.addEventListener("DOMContentLoaded", init)
-})()

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SnipLink History</title>
+  <link rel="stylesheet" href="options.css">
+  <link rel="stylesheet" href="dark-mode.css">
+  <style>
+    .history-item {
+      background-color: white;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .history-item:hover {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+    
+    .history-timestamp {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+    
+    .history-urls {
+      margin-bottom: 8px;
+    }
+    
+    .history-url {
+      font-size: 13px;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      color: #374151;
+      word-break: break-all;
+      margin: 4px 0;
+    }
+    
+    .history-url-label {
+      font-weight: 600;
+      color: #6b7280;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .history-params {
+      font-size: 12px;
+      color: #ef4444;
+    }
+    
+    .history-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+    }
+    
+    .history-btn {
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #4f46e5;
+      background-color: white;
+      border: 1px solid #4f46e5;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .history-btn:hover {
+      background-color: #4f46e5;
+      color: white;
+    }
+    
+    .no-history {
+      text-align: center;
+      color: #9ca3af;
+      padding: 40px;
+      background-color: white;
+      border-radius: 8px;
+    }
+    
+    .clear-history-btn {
+      background-color: #ef4444;
+      color: white;
+      border-color: #ef4444;
+    }
+    
+    .clear-history-btn:hover {
+      background-color: #dc2626;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>SnipLink History</h1>
+    
+    <div id="historyContainer"></div>
+  </div>
+  <script type="module" src="history.js"></script>
+</body>
+</html>

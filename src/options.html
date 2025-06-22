@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>SnipLink Settings</title>
   <link rel="stylesheet" href="options.css">
+  <link rel="stylesheet" href="dark-mode.css">
 </head>
 <body>
   <div class="container">
@@ -20,10 +21,17 @@
     </section>
     
     <section class="section">
+      <h2>Domain Whitelist</h2>
+      <p class="description">Domains where tracking parameters should be preserved. Enter each domain on a new line.</p>
+      
+      <textarea id="whitelist" rows="5" placeholder="Example:&#10;example.com&#10;analytics.example.com"></textarea>
+    </section>
+    
+    <section class="section">
       <h2>Default Parameters Removed</h2>
       <div class="default-params" id="defaultParams"></div>
     </section>
   </div>
-  <script src="options.js"></script>
+  <script type="module" src="options.js"></script>
 </body>
 </html>

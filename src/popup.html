@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>SnipLink</title>
   <link rel="stylesheet" href="popup.css">
+  <link rel="stylesheet" href="dark-mode.css">
 </head>
 <body>
   <div class="container">
@@ -18,12 +19,21 @@
     <div class="url-section">
       <label>Clean URL:</label>
       <div class="url-display" id="cleanUrl"></div>
+      <input type="text" id="cleanUrlInput" class="url-input" style="display: none;">
+      <div class="url-actions">
+        <button id="editBtn" class="action-btn">Edit</button>
+        <button id="saveBtn" class="action-btn" style="display: none;">Save</button>
+        <button id="cancelBtn" class="action-btn" style="display: none;">Cancel</button>
+      </div>
     </div>
     
     <div class="removed-params" id="removedParams"></div>
     
-    <a href="#" id="settingsLink" class="settings-link">Settings</a>
+    <div style="display: flex; justify-content: space-between; margin-top: 16px;">
+      <a href="#" id="historyLink" class="settings-link">History</a>
+      <a href="#" id="settingsLink" class="settings-link">Settings</a>
+    </div>
   </div>
-  <script src="popup.js"></script>
+  <script type="module" src="popup.js"></script>
 </body>
 </html>
