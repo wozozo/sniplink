@@ -127,7 +127,7 @@ body {
 .logo-icon {
   width: 24px;
   height: 24px;
-  color: var(--accent-primary);
+  object-fit: contain;
 }
 
 .logo-text {

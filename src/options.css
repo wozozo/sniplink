@@ -131,7 +131,7 @@ body {
 .logo-icon {
   width: 32px;
   height: 32px;
-  color: var(--accent-primary);
+  object-fit: contain;
 }
 
 .logo-text {

@@ -13,6 +13,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
+    "copy:icons": "mkdir -p src/icons && cp icons/*.png src/icons/",
     "package": "pnpm build && pnpm package:zip",
     "package:zip": "cd dist && zip -r ../sniplink.zip . && cd .. && echo 'Extension packaged as sniplink.zip'"
   },

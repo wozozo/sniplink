@@ -23,7 +23,8 @@
       "Bash(python3:*)",
       "Bash(./icons/create-simple-icons.sh:*)",
       "Bash(./build.sh)",
-      "Bash(unzip:*)"
+      "Bash(unzip:*)",
+      "Bash(cp:*)"
     ],
     "deny": []
   }
