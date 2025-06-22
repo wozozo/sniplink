@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { addToHistory, cleanUrl, getHistory, getTrackingParams } from "../shared.js"
+import { cleanUrl, getTrackingParams } from "../shared.js"
 
 describe("shared utilities", () => {
   beforeEach(() => {
@@ -163,74 +163,4 @@ describe("shared utilities", () => {
     })
   })
 
-  describe("history functions", () => {
-    describe("addToHistory", () => {
-      it("should add new item to history", async () => {
-        vi.mocked(chrome.storage.sync.get).mockResolvedValue({ history: [] })
-
-        await addToHistory("https://example.com?utm_source=test", "https://example.com", [
-          "utm_source=test",
-        ])
-
-        expect(chrome.storage.sync.set).toHaveBeenCalledWith({
-          history: expect.arrayContaining([
-            expect.objectContaining({
-              originalUrl: "https://example.com?utm_source=test",
-              cleanUrl: "https://example.com",
-              removedParams: ["utm_source=test"],
-              timestamp: expect.any(Number),
-            }),
-          ]),
-        })
-      })
-
-      it("should limit history to 10 items", async () => {
-        const existingHistory = Array(10)
-          .fill(null)
-          .map((_, i) => ({
-            originalUrl: `https://example${i}.com`,
-            cleanUrl: `https://example${i}.com`,
-            removedParams: [],
-            timestamp: Date.now() - i * 1000,
-          }))
-
-        vi.mocked(chrome.storage.sync.get).mockResolvedValue({ history: existingHistory })
-
-        await addToHistory("https://new.com?utm_source=test", "https://new.com", [
-          "utm_source=test",
-        ])
-
-        const setCall = vi.mocked(chrome.storage.sync.set).mock.calls[0][0] as any
-        expect(setCall.history).toHaveLength(10)
-        expect(setCall.history[0].originalUrl).toBe("https://new.com?utm_source=test")
-      })
-    })
-
-    describe("getHistory", () => {
-      it("should return empty array when no history", async () => {
-        vi.mocked(chrome.storage.sync.get).mockResolvedValue({})
-
-        const history = await getHistory()
-
-        expect(history).toEqual([])
-      })
-
-      it("should return stored history", async () => {
-        const storedHistory = [
-          {
-            originalUrl: "https://example.com?utm_source=test",
-            cleanUrl: "https://example.com",
-            removedParams: ["utm_source=test"],
-            timestamp: Date.now(),
-          },
-        ]
-
-        vi.mocked(chrome.storage.sync.get).mockResolvedValue({ history: storedHistory })
-
-        const history = await getHistory()
-
-        expect(history).toEqual(storedHistory)
-      })
-    })
-  })
 })

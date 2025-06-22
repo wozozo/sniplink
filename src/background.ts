@@ -1,4 +1,4 @@
-import { addToHistory, cleanUrl } from "./shared.js"
+import { cleanUrl } from "./shared.js"
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
@@ -81,11 +81,6 @@ chrome.commands.onCommand.addListener(async (command) => {
     })
 
     await chrome.offscreen.closeDocument()
-
-    // Add to history if parameters were removed
-    if (result.removedParams.length > 0) {
-      await addToHistory(tab.url, result.cleanUrl, result.removedParams)
-    }
 
     // Show notification
     chrome.notifications.create({

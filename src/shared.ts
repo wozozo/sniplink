@@ -1,5 +1,5 @@
 import { DEFAULT_TRACKING_PARAMS } from "./constants.js"
-import type { CleanUrlResult, HistoryItem, StorageData } from "./types.js"
+import type { CleanUrlResult, StorageData } from "./types.js"
 
 export async function getTrackingParams(): Promise<string[]> {
   const result = (await chrome.storage.sync.get(["customParams"])) as StorageData
@@ -79,30 +79,3 @@ export async function cleanUrl(urlString: string): Promise<CleanUrlResult> {
   }
 }
 
-const MAX_HISTORY_ITEMS = 10
-
-export async function addToHistory(
-  originalUrl: string,
-  cleanUrl: string,
-  removedParams: string[],
-): Promise<void> {
-  const result = (await chrome.storage.sync.get(["history"])) as StorageData
-  const history = result.history || []
-
-  const newItem: HistoryItem = {
-    originalUrl,
-    cleanUrl,
-    removedParams,
-    timestamp: Date.now(),
-  }
-
-  // Add to beginning and limit to MAX_HISTORY_ITEMS
-  const updatedHistory = [newItem, ...history].slice(0, MAX_HISTORY_ITEMS)
-
-  await chrome.storage.sync.set({ history: updatedHistory })
-}
-
-export async function getHistory(): Promise<HistoryItem[]> {
-  const result = (await chrome.storage.sync.get(["history"])) as StorageData
-  return result.history || []
-}

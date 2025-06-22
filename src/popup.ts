@@ -1,4 +1,4 @@
-import { addToHistory, cleanUrl } from "./shared.js"
+import { cleanUrl } from "./shared.js"
 import type { CleanUrlResult } from "./types.js"
 
 async function getCurrentTab() {
@@ -25,11 +25,6 @@ async function init() {
 
   // Copy to clipboard immediately
   const success = await copyToClipboard(result.cleanUrl)
-
-  // Add to history if successful and parameters were removed
-  if (success && result.removedParams.length > 0) {
-    await addToHistory(tab.url, result.cleanUrl, result.removedParams)
-  }
 
   // Update UI elements
   const status = document.getElementById("status")
@@ -82,14 +77,6 @@ async function init() {
     })
   }
 
-  // History link event
-  const historyLink = document.getElementById("historyLink")
-  if (historyLink) {
-    historyLink.addEventListener("click", (e) => {
-      e.preventDefault()
-      chrome.tabs.create({ url: chrome.runtime.getURL("src/history.html") })
-    })
-  }
 
   // Edit functionality
   const editBtn = document.getElementById("editBtn") as HTMLButtonElement | null
