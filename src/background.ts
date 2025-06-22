@@ -68,4 +68,3 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     message: `Copied clean URL (removed ${result.removedParams.length} parameters)`,
   });
 });
-
