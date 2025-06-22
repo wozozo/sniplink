@@ -73,9 +73,6 @@ pnpm test
 
 # Run tests with UI
 pnpm test:ui
-
-# Run tests with coverage
-pnpm test:coverage
 ```
 
 ### Project Structure

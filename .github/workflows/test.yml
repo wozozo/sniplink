@@ -1,0 +1,55 @@
+name: Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'pnpm'
+
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+
+    - name: Run type check
+      run: pnpm typecheck
+
+    - name: Run linter
+      run: pnpm lint
+
+    - name: Run tests
+      run: pnpm test
+
+    - name: Build extension
+      run: pnpm build
+
+    - name: Check build output
+      run: |
+        echo "Checking if all required files exist..."
+        test -f src/background.js
+        test -f src/popup.js
+        test -f src/options.js
+        test -f src/offscreen.js
+        test -f src/shared.js
+        echo "All files exist!"
