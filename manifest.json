@@ -32,20 +32,4 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "commands": {
-    "_execute_action": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+L",
-        "mac": "Command+Shift+L"
-      },
-      "description": "Open SnipLink popup"
-    },
-    "clean-current-tab": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+C",
-        "mac": "Command+Shift+C"
-      },
-      "description": "Clean current tab URL"
-    }
-  }
 }

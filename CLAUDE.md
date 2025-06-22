@@ -43,7 +43,6 @@ pnpm test:coverage
 
 1. **Background Service Worker** (`src/background.ts`):
    - Handles context menu creation and clicks
-   - Manages keyboard shortcuts
    - Creates offscreen documents for clipboard operations
    - Shows notifications for user feedback
 
@@ -79,7 +78,6 @@ pnpm test:coverage
 - **Multiple Access Methods**:
   - Popup interface
   - Context menu on links/pages
-  - Keyboard shortcuts (Cmd/Ctrl+Shift+L for popup, Cmd/Ctrl+Shift+C for current tab)
 
 ### Testing
 

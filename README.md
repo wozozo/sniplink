@@ -1,6 +1,10 @@
-# SnipLink
+<div align="center">
+  <img src="src/icons/original1.png" alt="SnipLink Icon" width="128" height="128">
 
-A Chrome extension that removes tracking parameters from URLs to create clean, shareable links.
+  # SnipLink
+
+  A Chrome extension that removes tracking parameters from URLs to create clean, shareable links.
+</div>
 
 ## Features
 
@@ -11,7 +15,6 @@ A Chrome extension that removes tracking parameters from URLs to create clean, s
 - **Multiple Access Methods**:
   - Popup interface
   - Right-click context menu on links/pages
-  - Keyboard shortcuts (Cmd/Ctrl+Shift+L for popup, Cmd/Ctrl+Shift+C for current tab)
 
 ## Installation
 
@@ -80,7 +83,7 @@ pnpm test:coverage
 ```
 sniplink/
 ├── src/
-│   ├── background.ts     # Service worker for context menus and shortcuts
+│   ├── background.ts     # Service worker for context menus
 │   ├── popup.ts         # Popup UI logic
 │   ├── options.ts       # Options page logic
 │   ├── offscreen.ts     # Offscreen document for clipboard operations
@@ -103,10 +106,6 @@ sniplink/
 ### Context Menu
 - Right-click on any link and select "Copy clean link" to copy without tracking parameters
 - Right-click on a page and select "Copy clean link for this page"
-
-### Keyboard Shortcuts
-- **Cmd/Ctrl+Shift+L**: Open popup
-- **Cmd/Ctrl+Shift+C**: Clean and copy current tab URL
 
 ### Options
 Access the options page by:
