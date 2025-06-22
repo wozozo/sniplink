@@ -16,8 +16,8 @@
       
       <textarea id="customParams" rows="10" placeholder="Example:&#10;custom_param1&#10;custom_param2&#10;tracking_id"></textarea>
       
-      <button id="saveBtn" class="save-btn">Save</button>
-      <div id="status" class="status"></div>
+      <button id="saveCustomParams" class="save-btn">Save</button>
+      <div id="customParamsStatus" class="status"></div>
     </section>
     
     <section class="section">
@@ -25,6 +25,19 @@
       <p class="description">Domains where tracking parameters should be preserved. Enter each domain on a new line.</p>
       
       <textarea id="whitelist" rows="5" placeholder="Example:&#10;example.com&#10;analytics.example.com"></textarea>
+      
+      <button id="saveWhitelist" class="save-btn">Save</button>
+      <div id="whitelistStatus" class="status"></div>
+    </section>
+    
+    <section class="section">
+      <h2>Amazon Associate ID</h2>
+      <p class="description">Your Amazon Associate ID will be automatically added to cleaned Amazon URLs.</p>
+      
+      <input type="text" id="amazonAssociateId" placeholder="your-associate-id-22" />
+      
+      <button id="saveAmazonId" class="save-btn">Save</button>
+      <div id="amazonIdStatus" class="status"></div>
     </section>
     
     <section class="section">

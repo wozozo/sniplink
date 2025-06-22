@@ -52,7 +52,7 @@ h2 {
   margin: 0 0 16px 0;
 }
 
-#customParams, #whitelist {
+#customParams, #whitelist, #amazonAssociateId {
   width: 100%;
   padding: 12px;
   border: 1px solid #d1d5db;
@@ -63,7 +63,11 @@ h2 {
   box-sizing: border-box;
 }
 
-#customParams:focus, #whitelist:focus {
+#amazonAssociateId {
+  resize: none;
+}
+
+#customParams:focus, #whitelist:focus, #amazonAssociateId:focus {
   outline: none;
   border-color: #4f46e5;
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
@@ -95,6 +99,8 @@ h2 {
   margin-left: 16px;
   font-size: 14px;
   font-weight: 500;
+  min-height: 20px;
+  vertical-align: middle;
 }
 
 .status.success {
@@ -139,13 +145,13 @@ h2 {
     color: #9ca3af;
   }
   
-  #customParams, #whitelist {
+  #customParams, #whitelist, #amazonAssociateId {
     background-color: #374151;
     color: #e5e7eb;
     border-color: #4b5563;
   }
   
-  #customParams:focus, #whitelist:focus {
+  #customParams:focus, #whitelist:focus, #amazonAssociateId:focus {
     border-color: #818cf8;
     box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
   }
@@ -187,14 +193,16 @@ body.dark-mode .description {
 }
 
 body.dark-mode #customParams,
-body.dark-mode #whitelist {
+body.dark-mode #whitelist,
+body.dark-mode #amazonAssociateId {
   background-color: #374151;
   color: #e5e7eb;
   border-color: #4b5563;
 }
 
 body.dark-mode #customParams:focus,
-body.dark-mode #whitelist:focus {
+body.dark-mode #whitelist:focus,
+body.dark-mode #amazonAssociateId:focus {
   border-color: #818cf8;
   box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
 }

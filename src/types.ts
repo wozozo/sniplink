@@ -3,6 +3,7 @@ export interface StorageData {
   whitelist?: string[]
   darkMode?: boolean
   history?: HistoryItem[]
+  amazonAssociateId?: string
 }
 
 export interface HistoryItem {

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { addToHistory, cleanUrl, getHistory, getTrackingParams } from "../shared"
+import { addToHistory, cleanUrl, getHistory, getTrackingParams } from "../shared.js"
 
 describe("shared utilities", () => {
   beforeEach(() => {
@@ -33,10 +33,12 @@ describe("shared utilities", () => {
   describe("cleanUrl", () => {
     beforeEach(() => {
       vi.mocked(chrome.storage.sync.get).mockImplementation(async (keys) => {
-        if (keys.includes("customParams")) {
+        const keysArray = Array.isArray(keys) ? keys : [keys]
+        
+        if (keysArray.includes("customParams")) {
           return { customParams: [] }
         }
-        if (keys.includes("whitelist")) {
+        if (keysArray.includes("whitelist")) {
           return { whitelist: [] }
         }
         return {}
@@ -122,6 +124,41 @@ describe("shared utilities", () => {
 
       expect(result.cleanUrl).toBe("https://www.amazon.co.jp/something")
       expect(result.removedParams).toEqual(["utm_source=test"])
+      expect(result.error).toBeNull()
+    })
+
+    it("should add Amazon Associate ID to cleaned Amazon URLs", async () => {
+      // Override the beforeEach mock for this specific test
+      ;(chrome.storage.sync.get as any) = vi.fn().mockImplementation(async (keys: any) => {
+        const keysArray = Array.isArray(keys) ? keys : [keys]
+        
+        if (keysArray.includes("whitelist")) {
+          return { whitelist: [] }
+        }
+        if (keysArray.includes("amazonAssociateId")) {
+          return { amazonAssociateId: "myassociate-22" }
+        }
+        if (keysArray.includes("customParams")) {
+          return { customParams: [] }
+        }
+        
+        return {}
+      })
+
+      const result = await cleanUrl("https://www.amazon.co.jp/Some-Product/dp/B08N5WRWNW?th=1")
+
+      expect(result.cleanUrl).toBe("https://www.amazon.co.jp/dp/B08N5WRWNW?tag=myassociate-22")
+      expect(result.removedParams).toContain("th=1")
+      expect(result.error).toBeNull()
+    })
+
+    it("should not add tag parameter when Amazon Associate ID is not set", async () => {
+      vi.mocked(chrome.storage.sync.get).mockImplementation(async () => ({}))
+
+      const result = await cleanUrl("https://www.amazon.com/Product/dp/B08N5WRWNW?ref=test")
+
+      expect(result.cleanUrl).toBe("https://www.amazon.com/dp/B08N5WRWNW")
+      expect(result.removedParams).toContain("ref=test")
       expect(result.error).toBeNull()
     })
   })

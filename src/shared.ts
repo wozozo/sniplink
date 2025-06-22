@@ -30,8 +30,12 @@ export async function cleanUrl(urlString: string): Promise<CleanUrlResult> {
       const dpMatch = url.pathname.match(/\/dp\/([A-Z0-9]+)/i)
       if (dpMatch) {
         const asin = dpMatch[1]
-        const cleanAmazonUrl = `https://${url.hostname}/dp/${asin}`
+        let cleanAmazonUrl = `https://${url.hostname}/dp/${asin}`
         const removedParams: string[] = []
+        
+        // Get Amazon Associate ID from storage
+        const storageResult = (await chrome.storage.sync.get(["amazonAssociateId"])) as StorageData
+        const amazonAssociateId = storageResult.amazonAssociateId
         
         // Collect all removed parameters
         url.searchParams.forEach((value, key) => {
@@ -41,6 +45,11 @@ export async function cleanUrl(urlString: string): Promise<CleanUrlResult> {
         // Also note if we removed path components
         if (url.pathname !== `/dp/${asin}`) {
           removedParams.push(`path=${url.pathname}`)
+        }
+        
+        // Add Associate ID if configured
+        if (amazonAssociateId) {
+          cleanAmazonUrl += `?tag=${amazonAssociateId}`
         }
         
         return { cleanUrl: cleanAmazonUrl, removedParams, error: null }
