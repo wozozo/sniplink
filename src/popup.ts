@@ -1,5 +1,4 @@
 import { cleanUrl } from "./shared.js";
-import type { CleanUrlResult } from "./types.js";
 
 async function getCurrentTab() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -16,22 +15,33 @@ async function copyToClipboard(text: string): Promise<boolean> {
   }
 }
 
+function showStatus(message: string, type: "success" | "error") {
+  const status = document.getElementById("status");
+  if (status) {
+    status.textContent = message;
+    status.className = `status-toast ${type} show`;
+
+    // Hide after 3 seconds
+    setTimeout(() => {
+      status.classList.remove("show");
+    }, 3000);
+  }
+}
+
 async function init() {
   const tab = await getCurrentTab();
   if (!tab.url) {
     return;
   }
-  const result = await cleanUrl(tab.url);
 
-  // Copy to clipboard immediately
-  const success = await copyToClipboard(result.cleanUrl);
+  let result = await cleanUrl(tab.url);
 
   // Update UI elements
-  const status = document.getElementById("status");
   const originalUrlEl = document.getElementById("originalUrl");
   const cleanUrlEl = document.getElementById("cleanUrl");
   const removedParamsEl = document.getElementById("removedParams");
-  const settingsLink = document.getElementById("settingsLink");
+  const settingsBtn = document.getElementById("settingsBtn");
+  const copyBtn = document.getElementById("copyBtn");
 
   // Display URLs
   if (originalUrlEl) {
@@ -41,17 +51,38 @@ async function init() {
     cleanUrlEl.textContent = result.cleanUrl;
   }
 
-  // Display status
-  if (status) {
-    if (result.error) {
-      status.textContent = `✗ Error: ${result.error}`;
-      status.className = "status error";
-    } else if (success) {
-      status.textContent = "✓ Copied to clipboard";
-      status.className = "status success";
-    } else {
-      status.textContent = "✗ Failed to copy to clipboard";
-      status.className = "status error";
+  // Copy button functionality
+  if (copyBtn) {
+    copyBtn.addEventListener("click", async () => {
+      const textToCopy = cleanUrlEl?.textContent || result.cleanUrl;
+      const success = await copyToClipboard(textToCopy);
+
+      if (result.error) {
+        showStatus(`Error: ${result.error}`, "error");
+      } else if (success) {
+        const paramCount = result.removedParams.length;
+        const message =
+          paramCount > 0
+            ? `✓ Copied! Removed ${paramCount} tracking parameter${paramCount > 1 ? "s" : ""}`
+            : "✓ Copied clean URL";
+        showStatus(message, "success");
+      } else {
+        showStatus("✗ Failed to copy to clipboard", "error");
+      }
+    });
+
+    // Auto-copy on load
+    copyBtn.click();
+  }
+
+  // Display URL metadata
+  const originalMeta = document.getElementById("originalMeta");
+  if (originalMeta) {
+    try {
+      const url = new URL(tab.url);
+      originalMeta.textContent = url.hostname;
+    } catch (_e) {
+      originalMeta.textContent = "";
     }
   }
 
@@ -59,19 +90,19 @@ async function init() {
   if (removedParamsEl) {
     if (result.removedParams.length > 0) {
       removedParamsEl.innerHTML = `
-        <label>Removed parameters:</label>
-        <ul class="params-list">
-          ${result.removedParams.map((param) => `<li>${param}</li>`).join("")}
-        </ul>
+        <label>Removed Parameters</label>
+        <div class="params-grid">
+          ${result.removedParams.map((param) => `<div class="param-tag">${param.split("=")[0]}</div>`).join("")}
+        </div>
       `;
     } else {
-      removedParamsEl.innerHTML = '<div class="no-params">No parameters were removed</div>';
+      removedParamsEl.innerHTML = '<div class="no-params">No tracking parameters detected</div>';
     }
   }
 
-  // Settings link event
-  if (settingsLink) {
-    settingsLink.addEventListener("click", (e) => {
+  // Settings button
+  if (settingsBtn) {
+    settingsBtn.addEventListener("click", (e) => {
       e.preventDefault();
       chrome.runtime.openOptionsPage();
     });
@@ -82,47 +113,44 @@ async function init() {
   const saveBtn = document.getElementById("saveBtn") as HTMLButtonElement | null;
   const cancelBtn = document.getElementById("cancelBtn") as HTMLButtonElement | null;
   const cleanUrlInput = document.getElementById("cleanUrlInput") as HTMLInputElement | null;
+  const editActions = document.getElementById("editActions") as HTMLDivElement | null;
 
-  if (editBtn && saveBtn && cancelBtn && cleanUrlInput && cleanUrlEl) {
+  if (editBtn && saveBtn && cancelBtn && cleanUrlInput && cleanUrlEl && editActions) {
     editBtn.addEventListener("click", () => {
-      cleanUrlInput.value = result.cleanUrl;
+      cleanUrlInput.value = cleanUrlEl.textContent || result.cleanUrl;
       cleanUrlEl.style.display = "none";
       cleanUrlInput.style.display = "block";
-      editBtn.style.display = "none";
-      saveBtn.style.display = "inline-block";
-      cancelBtn.style.display = "inline-block";
+      editActions.style.display = "flex";
+      if (editBtn.parentElement) {
+        editBtn.parentElement.style.display = "none";
+      }
       cleanUrlInput.focus();
       cleanUrlInput.select();
     });
 
-    cancelBtn.addEventListener("click", () => {
+    const hideEditMode = () => {
       cleanUrlEl.style.display = "block";
       cleanUrlInput.style.display = "none";
-      editBtn.style.display = "inline-block";
-      saveBtn.style.display = "none";
-      cancelBtn.style.display = "none";
-    });
+      editActions.style.display = "none";
+      if (editBtn.parentElement) {
+        editBtn.parentElement.style.display = "flex";
+      }
+    };
+
+    cancelBtn.addEventListener("click", hideEditMode);
 
     saveBtn.addEventListener("click", async () => {
       const newUrl = cleanUrlInput.value.trim();
       if (newUrl) {
-        const success = await copyToClipboard(newUrl);
-        if (status) {
-          if (success) {
-            status.textContent = "✓ Copied edited URL to clipboard";
-            status.className = "status success";
-          } else {
-            status.textContent = "✗ Failed to copy edited URL";
-            status.className = "status error";
-          }
-        }
         cleanUrlEl.textContent = newUrl;
+        // Update result to reflect manual edit
+        result = {
+          ...result,
+          cleanUrl: newUrl,
+          removedParams: [],
+        };
       }
-      cleanUrlEl.style.display = "block";
-      cleanUrlInput.style.display = "none";
-      editBtn.style.display = "inline-block";
-      saveBtn.style.display = "none";
-      cancelBtn.style.display = "none";
+      hideEditMode();
     });
 
     // Save on Enter key
