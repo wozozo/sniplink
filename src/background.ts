@@ -33,23 +33,37 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   }
 
   // Copy to clipboard using offscreen document
-  await chrome.offscreen.createDocument({
-    url: "offscreen.html",
-    reasons: ["CLIPBOARD"],
-    justification: "Copy clean URL to clipboard",
-  });
+  try {
+    await chrome.offscreen.createDocument({
+      url: "src/offscreen.html",
+      reasons: ["CLIPBOARD"],
+      justification: "Copy clean URL to clipboard",
+    });
+  } catch (e) {
+    // Document may already exist
+  }
 
-  await chrome.runtime.sendMessage({
+  const response = await chrome.runtime.sendMessage({
     action: "copyToClipboard",
     text: result.cleanUrl,
   });
 
-  await chrome.offscreen.closeDocument();
+  if (!response?.success) {
+    console.error("Failed to copy to clipboard:", response?.error);
+    // Show error notification
+    chrome.notifications.create({
+      type: "basic",
+      iconUrl: "icons/icon48.png",
+      title: "SnipLink Error",
+      message: "Failed to copy URL to clipboard",
+    });
+    return;
+  }
 
   // Show notification
   chrome.notifications.create({
     type: "basic",
-    iconUrl: "icon48.png",
+    iconUrl: "icons/icon48.png",
     title: "SnipLink",
     message: `Copied clean URL (removed ${result.removedParams.length} parameters)`,
   });
