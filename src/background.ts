@@ -1,35 +1,35 @@
-import { cleanUrl } from "./shared.js"
+import { cleanUrl } from "./shared.js";
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "cleanLink",
     title: "Copy clean link",
     contexts: ["link"],
-  })
+  });
 
   chrome.contextMenus.create({
     id: "cleanPage",
     title: "Copy clean page URL",
     contexts: ["page"],
-  })
-})
+  });
+});
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  let urlToClean = ""
+  let urlToClean = "";
 
   if (info.menuItemId === "cleanLink" && info.linkUrl) {
-    urlToClean = info.linkUrl
+    urlToClean = info.linkUrl;
   } else if (info.menuItemId === "cleanPage" && tab?.url) {
-    urlToClean = tab.url
+    urlToClean = tab.url;
   }
 
-  if (!urlToClean) return
+  if (!urlToClean) return;
 
-  const result = await cleanUrl(urlToClean)
+  const result = await cleanUrl(urlToClean);
 
   if (result.error) {
-    console.error("Failed to clean URL:", result.error)
-    return
+    console.error("Failed to clean URL:", result.error);
+    return;
   }
 
   // Copy to clipboard using offscreen document
@@ -37,14 +37,14 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     url: "offscreen.html",
     reasons: ["CLIPBOARD"],
     justification: "Copy clean URL to clipboard",
-  })
+  });
 
   await chrome.runtime.sendMessage({
     action: "copyToClipboard",
     text: result.cleanUrl,
-  })
+  });
 
-  await chrome.offscreen.closeDocument()
+  await chrome.offscreen.closeDocument();
 
   // Show notification
   chrome.notifications.create({
@@ -52,20 +52,20 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     iconUrl: "icon48.png",
     title: "SnipLink",
     message: `Copied clean URL (removed ${result.removedParams.length} parameters)`,
-  })
-})
+  });
+});
 
 // Handle keyboard shortcuts
 chrome.commands.onCommand.addListener(async (command) => {
   if (command === "clean-current-tab") {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-    if (!tab.url) return
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab.url) return;
 
-    const result = await cleanUrl(tab.url)
+    const result = await cleanUrl(tab.url);
 
     if (result.error) {
-      console.error("Failed to clean URL:", result.error)
-      return
+      console.error("Failed to clean URL:", result.error);
+      return;
     }
 
     // Copy to clipboard
@@ -73,14 +73,14 @@ chrome.commands.onCommand.addListener(async (command) => {
       url: "offscreen.html",
       reasons: ["CLIPBOARD"],
       justification: "Copy clean URL to clipboard",
-    })
+    });
 
     await chrome.runtime.sendMessage({
       action: "copyToClipboard",
       text: result.cleanUrl,
-    })
+    });
 
-    await chrome.offscreen.closeDocument()
+    await chrome.offscreen.closeDocument();
 
     // Show notification
     chrome.notifications.create({
@@ -91,6 +91,6 @@ chrome.commands.onCommand.addListener(async (command) => {
         result.removedParams.length > 0
           ? `Copied clean URL (removed ${result.removedParams.length} parameters)`
           : "Copied URL (no parameters removed)",
-    })
+    });
   }
-})
+});

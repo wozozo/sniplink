@@ -42,4 +42,4 @@ export const DEFAULT_TRACKING_PARAMS = [
   "aid",
   "bid",
   "vid",
-] as const
+] as const;

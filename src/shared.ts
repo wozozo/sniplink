@@ -1,81 +1,80 @@
-import { DEFAULT_TRACKING_PARAMS } from "./constants.js"
-import type { CleanUrlResult, StorageData } from "./types.js"
+import { DEFAULT_TRACKING_PARAMS } from "./constants.js";
+import type { CleanUrlResult, StorageData } from "./types.js";
 
 export async function getTrackingParams(): Promise<string[]> {
-  const result = (await chrome.storage.sync.get(["customParams"])) as StorageData
-  const customParams = result.customParams || []
-  return [...DEFAULT_TRACKING_PARAMS, ...customParams]
+  const result = (await chrome.storage.sync.get(["customParams"])) as StorageData;
+  const customParams = result.customParams || [];
+  return [...DEFAULT_TRACKING_PARAMS, ...customParams];
 }
 
 export async function cleanUrl(urlString: string): Promise<CleanUrlResult> {
   try {
-    const url = new URL(urlString)
+    const url = new URL(urlString);
 
     // Check if domain is whitelisted
-    const result = (await chrome.storage.sync.get(["whitelist"])) as StorageData
-    const whitelist = result.whitelist || []
+    const result = (await chrome.storage.sync.get(["whitelist"])) as StorageData;
+    const whitelist = result.whitelist || [];
 
-    const hostname = url.hostname.toLowerCase()
+    const hostname = url.hostname.toLowerCase();
     const isWhitelisted = whitelist.some((domain) => {
-      const domainLower = domain.toLowerCase()
-      return hostname === domainLower || hostname.endsWith(`.${domainLower}`)
-    })
+      const domainLower = domain.toLowerCase();
+      return hostname === domainLower || hostname.endsWith(`.${domainLower}`);
+    });
 
     if (isWhitelisted) {
-      return { cleanUrl: urlString, removedParams: [], error: null }
+      return { cleanUrl: urlString, removedParams: [], error: null };
     }
 
     // Special handling for Amazon URLs
     if (hostname.includes("amazon.")) {
-      const dpMatch = url.pathname.match(/\/dp\/([A-Z0-9]+)/i)
+      const dpMatch = url.pathname.match(/\/dp\/([A-Z0-9]+)/i);
       if (dpMatch) {
-        const asin = dpMatch[1]
-        let cleanAmazonUrl = `https://${url.hostname}/dp/${asin}`
-        const removedParams: string[] = []
-        
+        const asin = dpMatch[1];
+        let cleanAmazonUrl = `https://${url.hostname}/dp/${asin}`;
+        const removedParams: string[] = [];
+
         // Get Amazon Associate ID from storage
-        const storageResult = (await chrome.storage.sync.get(["amazonAssociateId"])) as StorageData
-        const amazonAssociateId = storageResult.amazonAssociateId
-        
+        const storageResult = (await chrome.storage.sync.get(["amazonAssociateId"])) as StorageData;
+        const amazonAssociateId = storageResult.amazonAssociateId;
+
         // Collect all removed parameters
         url.searchParams.forEach((value, key) => {
-          removedParams.push(`${key}=${value}`)
-        })
-        
+          removedParams.push(`${key}=${value}`);
+        });
+
         // Also note if we removed path components
         if (url.pathname !== `/dp/${asin}`) {
-          removedParams.push(`path=${url.pathname}`)
+          removedParams.push(`path=${url.pathname}`);
         }
-        
+
         // Add Associate ID if configured
         if (amazonAssociateId) {
-          cleanAmazonUrl += `?tag=${amazonAssociateId}`
+          cleanAmazonUrl += `?tag=${amazonAssociateId}`;
         }
-        
-        return { cleanUrl: cleanAmazonUrl, removedParams, error: null }
+
+        return { cleanUrl: cleanAmazonUrl, removedParams, error: null };
       }
     }
 
-    const params = new URLSearchParams(url.search)
-    const trackingParams = await getTrackingParams()
-    const removedParams: string[] = []
+    const params = new URLSearchParams(url.search);
+    const trackingParams = await getTrackingParams();
+    const removedParams: string[] = [];
 
     trackingParams.forEach((param) => {
       if (params.has(param)) {
-        removedParams.push(`${param}=${params.get(param)}`)
-        params.delete(param)
+        removedParams.push(`${param}=${params.get(param)}`);
+        params.delete(param);
       }
-    })
+    });
 
-    url.search = params.toString()
-    return { cleanUrl: url.toString(), removedParams, error: null }
+    url.search = params.toString();
+    return { cleanUrl: url.toString(), removedParams, error: null };
   } catch (error) {
-    console.error("Failed to clean URL:", error)
+    console.error("Failed to clean URL:", error);
     return {
       cleanUrl: urlString,
       removedParams: [],
       error: error instanceof Error ? error.message : "Unknown error",
-    }
+    };
   }
 }
-
