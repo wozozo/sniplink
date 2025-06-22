@@ -23,7 +23,11 @@
 ## Installation
 
 ### From Chrome Web Store
-(Coming soon)
+
+<a href="https://chromewebstore.google.com/detail/sniplink-clean-url-copier/mkbnjjgdohnaglpakohekhikjgdbplfg" target="_blank">
+   <img src="./screenshot/chrome-webstore.png" width="300">
+</a>
+
 
 ### For Development
 
