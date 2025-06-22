@@ -25,6 +25,28 @@ export async function cleanUrl(urlString: string): Promise<CleanUrlResult> {
       return { cleanUrl: urlString, removedParams: [], error: null }
     }
 
+    // Special handling for Amazon URLs
+    if (hostname.includes("amazon.")) {
+      const dpMatch = url.pathname.match(/\/dp\/([A-Z0-9]+)/i)
+      if (dpMatch) {
+        const asin = dpMatch[1]
+        const cleanAmazonUrl = `https://${url.hostname}/dp/${asin}`
+        const removedParams: string[] = []
+        
+        // Collect all removed parameters
+        url.searchParams.forEach((value, key) => {
+          removedParams.push(`${key}=${value}`)
+        })
+        
+        // Also note if we removed path components
+        if (url.pathname !== `/dp/${asin}`) {
+          removedParams.push(`path=${url.pathname}`)
+        }
+        
+        return { cleanUrl: cleanAmazonUrl, removedParams, error: null }
+      }
+    }
+
     const params = new URLSearchParams(url.search)
     const trackingParams = await getTrackingParams()
     const removedParams: string[] = []
