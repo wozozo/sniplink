@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock chrome APIs
 const mockContextMenus = {
@@ -30,7 +30,7 @@ global.chrome = {
   notifications: mockNotifications,
   offscreen: mockOffscreen,
   runtime: mockRuntime,
-} as any;
+} as unknown as typeof chrome;
 
 // Mock the shared module
 vi.mock("../shared.js", () => ({
@@ -52,7 +52,7 @@ describe("background script", () => {
 
     // Get the onInstalled callback
     const onInstalledCallback = mockRuntime.onInstalled.addListener.mock.calls[0][0];
-    
+
     // Execute the callback
     onInstalledCallback();
 
@@ -72,7 +72,7 @@ describe("background script", () => {
 
   it("should handle context menu clicks for links", async () => {
     const { cleanUrl } = await import("../shared.js");
-    const mockCleanUrl = cleanUrl as any;
+    const mockCleanUrl = cleanUrl as typeof vi.fn;
     mockCleanUrl.mockResolvedValue({
       cleanUrl: "https://example.com/clean",
       removedParams: ["utm_source", "utm_medium"],
@@ -92,11 +92,13 @@ describe("background script", () => {
         menuItemId: "cleanLink",
         linkUrl: "https://example.com?utm_source=test&utm_medium=test",
       },
-      {}
+      {},
     );
 
     // Verify cleanUrl was called
-    expect(mockCleanUrl).toHaveBeenCalledWith("https://example.com?utm_source=test&utm_medium=test");
+    expect(mockCleanUrl).toHaveBeenCalledWith(
+      "https://example.com?utm_source=test&utm_medium=test",
+    );
 
     // Verify offscreen document was created
     expect(mockOffscreen.createDocument).toHaveBeenCalledWith({
@@ -122,7 +124,7 @@ describe("background script", () => {
 
   it("should handle context menu clicks for pages", async () => {
     const { cleanUrl } = await import("../shared.js");
-    const mockCleanUrl = cleanUrl as any;
+    const mockCleanUrl = cleanUrl as typeof vi.fn;
     mockCleanUrl.mockResolvedValue({
       cleanUrl: "https://example.com/page",
       removedParams: [],
@@ -142,7 +144,7 @@ describe("background script", () => {
       },
       {
         url: "https://example.com/page?tracking=123",
-      }
+      },
     );
 
     expect(mockCleanUrl).toHaveBeenCalledWith("https://example.com/page?tracking=123");
@@ -150,7 +152,7 @@ describe("background script", () => {
 
   it("should handle clipboard copy errors", async () => {
     const { cleanUrl } = await import("../shared.js");
-    const mockCleanUrl = cleanUrl as any;
+    const mockCleanUrl = cleanUrl as typeof vi.fn;
     mockCleanUrl.mockResolvedValue({
       cleanUrl: "https://example.com/clean",
       removedParams: [],
@@ -168,7 +170,7 @@ describe("background script", () => {
         menuItemId: "cleanLink",
         linkUrl: "https://example.com",
       },
-      {}
+      {},
     );
 
     // Verify error notification was shown
@@ -182,7 +184,7 @@ describe("background script", () => {
 
   it("should handle cleanUrl errors", async () => {
     const { cleanUrl } = await import("../shared.js");
-    const mockCleanUrl = cleanUrl as any;
+    const mockCleanUrl = cleanUrl as typeof vi.fn;
     mockCleanUrl.mockResolvedValue({
       cleanUrl: "",
       removedParams: [],
@@ -200,7 +202,7 @@ describe("background script", () => {
         menuItemId: "cleanLink",
         linkUrl: "not-a-url",
       },
-      {}
+      {},
     );
 
     expect(consoleErrorSpy).toHaveBeenCalledWith("Failed to clean URL:", "Invalid URL");
@@ -219,7 +221,7 @@ describe("background script", () => {
       {
         menuItemId: "cleanLink",
       },
-      {}
+      {},
     );
 
     expect(mockOffscreen.createDocument).not.toHaveBeenCalled();
@@ -228,7 +230,7 @@ describe("background script", () => {
 
   it("should handle existing offscreen document", async () => {
     const { cleanUrl } = await import("../shared.js");
-    const mockCleanUrl = cleanUrl as any;
+    const mockCleanUrl = cleanUrl as typeof vi.fn;
     mockCleanUrl.mockResolvedValue({
       cleanUrl: "https://example.com/clean",
       removedParams: [],
@@ -247,7 +249,7 @@ describe("background script", () => {
         menuItemId: "cleanLink",
         linkUrl: "https://example.com",
       },
-      {}
+      {},
     );
 
     // Should still send message even if document creation failed

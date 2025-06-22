@@ -39,7 +39,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       reasons: ["CLIPBOARD"],
       justification: "Copy clean URL to clipboard",
     });
-  } catch (e) {
+  } catch (_e) {
     // Document may already exist
   }
 

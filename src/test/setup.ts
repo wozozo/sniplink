@@ -39,4 +39,4 @@ global.chrome = {
     createDocument: vi.fn(),
     closeDocument: vi.fn(),
   },
-} as any;
+} as unknown as typeof chrome;

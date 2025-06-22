@@ -132,21 +132,23 @@ describe("shared utilities", () => {
 
     it("should add Amazon Associate ID to cleaned Amazon URLs", async () => {
       // Override the beforeEach mock for this specific test
-      (chrome.storage.sync.get as any) = vi.fn().mockImplementation(async (keys: any) => {
-        const keysArray = Array.isArray(keys) ? keys : [keys];
+      (chrome.storage.sync.get as ReturnType<typeof vi.fn>) = vi
+        .fn()
+        .mockImplementation(async (keys: string | string[]) => {
+          const keysArray = Array.isArray(keys) ? keys : [keys];
 
-        if (keysArray.includes("whitelist")) {
-          return { whitelist: [] };
-        }
-        if (keysArray.includes("amazonAssociateId")) {
-          return { amazonAssociateId: "myassociate-22" };
-        }
-        if (keysArray.includes("customParams")) {
-          return { customParams: [] };
-        }
+          if (keysArray.includes("whitelist")) {
+            return { whitelist: [] };
+          }
+          if (keysArray.includes("amazonAssociateId")) {
+            return { amazonAssociateId: "myassociate-22" };
+          }
+          if (keysArray.includes("customParams")) {
+            return { customParams: [] };
+          }
 
-        return {};
-      });
+          return {};
+        });
 
       const result = await cleanUrl("https://www.amazon.co.jp/Some-Product/dp/B08N5WRWNW?th=1");
 

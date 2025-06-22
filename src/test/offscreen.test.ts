@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { JSDOM } from "jsdom";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("offscreen script", () => {
   let dom: JSDOM;
   let document: Document;
-  let mockSendResponse: any;
-  let execCommandSpy: any;
+  let mockSendResponse: ReturnType<typeof vi.fn>;
+  let execCommandSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     // Set up DOM environment
@@ -18,7 +18,7 @@ describe("offscreen script", () => {
       </html>
     `);
     document = dom.window.document;
-    global.document = document as any;
+    global.document = document as unknown as Document;
 
     // Mock chrome.runtime.onMessage
     global.chrome = {
@@ -27,7 +27,7 @@ describe("offscreen script", () => {
           addListener: vi.fn(),
         },
       },
-    } as any;
+    } as unknown as typeof chrome;
 
     // Mock execCommand (JSDOM doesn't have it by default)
     document.execCommand = vi.fn().mockReturnValue(true);
@@ -54,13 +54,14 @@ describe("offscreen script", () => {
   it("should successfully copy text to clipboard", async () => {
     await import("../offscreen.js");
 
-    const messageListener = (chrome.runtime.onMessage.addListener as any).mock.calls[0][0];
+    const messageListener = (chrome.runtime.onMessage.addListener as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
 
     const testText = "https://example.com/clean";
     const result = messageListener(
       { action: "copyToClipboard", text: testText },
       {},
-      mockSendResponse
+      mockSendResponse,
     );
 
     // Check textarea was updated
@@ -80,13 +81,10 @@ describe("offscreen script", () => {
 
     await import("../offscreen.js");
 
-    const messageListener = (chrome.runtime.onMessage.addListener as any).mock.calls[0][0];
+    const messageListener = (chrome.runtime.onMessage.addListener as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
 
-    messageListener(
-      { action: "copyToClipboard", text: "test" },
-      {},
-      mockSendResponse
-    );
+    messageListener({ action: "copyToClipboard", text: "test" }, {}, mockSendResponse);
 
     expect(mockSendResponse).toHaveBeenCalledWith({
       success: false,
@@ -104,13 +102,10 @@ describe("offscreen script", () => {
 
     await import("../offscreen.js");
 
-    const messageListener = (chrome.runtime.onMessage.addListener as any).mock.calls[0][0];
+    const messageListener = (chrome.runtime.onMessage.addListener as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
 
-    messageListener(
-      { action: "copyToClipboard", text: "test" },
-      {},
-      mockSendResponse
-    );
+    messageListener({ action: "copyToClipboard", text: "test" }, {}, mockSendResponse);
 
     expect(consoleErrorSpy).toHaveBeenCalledWith("Failed to copy to clipboard:", testError);
     expect(mockSendResponse).toHaveBeenCalledWith({
@@ -128,13 +123,10 @@ describe("offscreen script", () => {
 
     await import("../offscreen.js");
 
-    const messageListener = (chrome.runtime.onMessage.addListener as any).mock.calls[0][0];
+    const messageListener = (chrome.runtime.onMessage.addListener as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
 
-    messageListener(
-      { action: "copyToClipboard", text: "test" },
-      {},
-      mockSendResponse
-    );
+    messageListener({ action: "copyToClipboard", text: "test" }, {}, mockSendResponse);
 
     expect(mockSendResponse).toHaveBeenCalledWith({
       success: false,
@@ -145,12 +137,13 @@ describe("offscreen script", () => {
   it("should ignore non-copyToClipboard messages", async () => {
     await import("../offscreen.js");
 
-    const messageListener = (chrome.runtime.onMessage.addListener as any).mock.calls[0][0];
+    const messageListener = (chrome.runtime.onMessage.addListener as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
 
     const result = messageListener(
       { action: "someOtherAction", data: "test" },
       {},
-      mockSendResponse
+      mockSendResponse,
     );
 
     expect(mockSendResponse).not.toHaveBeenCalled();
@@ -160,15 +153,12 @@ describe("offscreen script", () => {
   it("should select text in textarea before copying", async () => {
     await import("../offscreen.js");
 
-    const messageListener = (chrome.runtime.onMessage.addListener as any).mock.calls[0][0];
+    const messageListener = (chrome.runtime.onMessage.addListener as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
     const textarea = document.getElementById("clipboard-helper") as HTMLTextAreaElement;
     const selectSpy = vi.spyOn(textarea, "select");
 
-    messageListener(
-      { action: "copyToClipboard", text: "test text" },
-      {},
-      mockSendResponse
-    );
+    messageListener({ action: "copyToClipboard", text: "test text" }, {}, mockSendResponse);
 
     expect(selectSpy).toHaveBeenCalled();
     selectSpy.mockRestore();
