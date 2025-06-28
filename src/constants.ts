@@ -42,4 +42,5 @@ export const DEFAULT_TRACKING_PARAMS = [
   "aid",
   "bid",
   "vid",
+  "__readwiseLocation",
 ] as const;
