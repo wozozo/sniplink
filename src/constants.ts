@@ -43,4 +43,6 @@ export const DEFAULT_TRACKING_PARAMS = [
   "bid",
   "vid",
   "__readwiseLocation",
+  "isFreemail",
+  "triedRedirect",
 ] as const;
