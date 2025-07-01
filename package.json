@@ -22,7 +22,7 @@
     "release:patch": "pnpm version:patch && pnpm release:tag",
     "release:minor": "pnpm version:minor && pnpm release:tag",
     "release:major": "pnpm version:major && pnpm release:tag",
-    "release:tag": "git add package.json && git commit -m \"chore: release v$(node -p \"require('./package.json').version\")\" && git tag -a v$(node -p \"require('./package.json').version\") -m \"Release version $(node -p \"require('./package.json').version\")\""
+    "release:tag": "node -e \"const fs = require('fs'); const manifest = JSON.parse(fs.readFileSync('manifest.json', 'utf8')); const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8')); manifest.version = pkg.version; fs.writeFileSync('manifest.json', JSON.stringify(manifest, null, 2) + '\\n');\" && git add package.json manifest.json && git commit -m \"chore: release v$(node -p \"require('./package.json').version\")\" && git tag -a v$(node -p \"require('./package.json').version\") -m \"Release version $(node -p \"require('./package.json').version\")\""
   },
   "keywords": [],
   "author": "",
