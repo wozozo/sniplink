@@ -1,5 +1,6 @@
 import { DEFAULT_TRACKING_PARAMS } from "./constants.js";
 import type { StorageData } from "./types.js";
+import { browserAPI } from "./browserCompat.js";
 
 function showStatus(statusId: string, message: string, type: "success" | "error" = "success") {
   const status = document.getElementById(statusId);
@@ -14,7 +15,7 @@ function showStatus(statusId: string, message: string, type: "success" | "error"
 }
 
 async function loadSettings() {
-  const result = (await chrome.storage.sync.get([
+  const result = (await browserAPI.storage.sync.get([
     "customParams",
     "whitelist",
     "amazonAssociateId",
@@ -85,7 +86,7 @@ async function saveCustomParams() {
     .filter((param) => param.length > 0);
 
   try {
-    await chrome.storage.sync.set({ customParams } as StorageData);
+    await browserAPI.storage.sync.set({ customParams } as StorageData);
     showStatus("customParamsStatus", "✓ Saved successfully");
   } catch (_error) {
     showStatus("customParamsStatus", "✗ Failed to save", "error");
@@ -103,7 +104,7 @@ async function saveWhitelist() {
     .filter((domain) => domain.length > 0);
 
   try {
-    await chrome.storage.sync.set({ whitelist } as StorageData);
+    await browserAPI.storage.sync.set({ whitelist } as StorageData);
     showStatus("whitelistStatus", "✓ Saved successfully");
   } catch (_error) {
     showStatus("whitelistStatus", "✗ Failed to save", "error");
@@ -119,7 +120,7 @@ async function saveAmazonId() {
   const amazonAssociateId = amazonAssociateIdEl.value.trim();
 
   try {
-    await chrome.storage.sync.set({ amazonAssociateId } as StorageData);
+    await browserAPI.storage.sync.set({ amazonAssociateId } as StorageData);
     showStatus("amazonIdStatus", "✓ Saved successfully");
   } catch (_error) {
     showStatus("amazonIdStatus", "✗ Failed to save", "error");
@@ -127,7 +128,7 @@ async function saveAmazonId() {
 }
 
 async function toggleDefaultParam(param: string, enabled: boolean) {
-  const result = (await chrome.storage.sync.get(["disabledDefaultParams"])) as StorageData;
+  const result = (await browserAPI.storage.sync.get(["disabledDefaultParams"])) as StorageData;
   let disabledDefaultParams = result.disabledDefaultParams || [];
 
   if (enabled) {
@@ -141,7 +142,7 @@ async function toggleDefaultParam(param: string, enabled: boolean) {
   }
 
   try {
-    await chrome.storage.sync.set({ disabledDefaultParams } as StorageData);
+    await browserAPI.storage.sync.set({ disabledDefaultParams } as StorageData);
     showStatus("defaultParamsStatus", "✓ Updated", "success");
   } catch (_error) {
     showStatus("defaultParamsStatus", "✗ Failed to update", "error");
@@ -156,12 +157,12 @@ async function toggleAllParams() {
 
   if (allChecked) {
     // Disable all
-    await chrome.storage.sync.set({
+    await browserAPI.storage.sync.set({
       disabledDefaultParams: [...DEFAULT_TRACKING_PARAMS],
     } as StorageData);
   } else {
     // Enable all
-    await chrome.storage.sync.set({
+    await browserAPI.storage.sync.set({
       disabledDefaultParams: [],
     } as StorageData);
   }

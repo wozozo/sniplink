@@ -1,20 +1,21 @@
 import { cleanUrl } from "./shared.js";
+import { browserAPI, copyToClipboard } from "./browserCompat.js";
 
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.contextMenus.create({
+browserAPI.runtime.onInstalled.addListener(() => {
+  browserAPI.contextMenus.create({
     id: "cleanLink",
     title: "Copy clean link",
     contexts: ["link"],
   });
 
-  chrome.contextMenus.create({
+  browserAPI.contextMenus.create({
     id: "cleanPage",
     title: "Copy clean page URL",
     contexts: ["page"],
   });
 });
 
-chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+browserAPI.contextMenus.onClicked.addListener(async (info, tab) => {
   let urlToClean = "";
 
   if (info.menuItemId === "cleanLink" && info.linkUrl) {
@@ -32,26 +33,13 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     return;
   }
 
-  // Copy to clipboard using offscreen document
+  // Copy to clipboard
   try {
-    await chrome.offscreen.createDocument({
-      url: "src/offscreen.html",
-      reasons: ["CLIPBOARD"],
-      justification: "Copy clean URL to clipboard",
-    });
-  } catch (_e) {
-    // Document may already exist
-  }
-
-  const response = await chrome.runtime.sendMessage({
-    action: "copyToClipboard",
-    text: result.cleanUrl,
-  });
-
-  if (!response?.success) {
-    console.error("Failed to copy to clipboard:", response?.error);
+    await copyToClipboard(result.cleanUrl);
+  } catch (error) {
+    console.error("Failed to copy to clipboard:", error);
     // Show error notification
-    chrome.notifications.create({
+    browserAPI.notifications.create({
       type: "basic",
       iconUrl: "icons/icon48.png",
       title: "SnipLink Error",
@@ -61,7 +49,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   }
 
   // Show notification
-  chrome.notifications.create({
+  browserAPI.notifications.create({
     type: "basic",
     iconUrl: "icons/icon48.png",
     title: "SnipLink",

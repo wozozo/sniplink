@@ -1,4 +1,6 @@
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+import { browserAPI } from "./browserCompat.js";
+
+browserAPI.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.action === "copyToClipboard") {
     // Use the textarea helper for clipboard operations
     const textarea = document.getElementById("clipboard-helper") as HTMLTextAreaElement;

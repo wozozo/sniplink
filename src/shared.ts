@@ -1,8 +1,9 @@
 import { DEFAULT_TRACKING_PARAMS } from "./constants.js";
 import type { CleanUrlResult, StorageData } from "./types.js";
+import { browserAPI } from "./browserCompat.js";
 
 export async function getTrackingParams(): Promise<string[]> {
-  const result = (await chrome.storage.sync.get([
+  const result = (await browserAPI.storage.sync.get([
     "customParams",
     "disabledDefaultParams",
   ])) as StorageData;
@@ -22,7 +23,7 @@ export async function cleanUrl(urlString: string): Promise<CleanUrlResult> {
     const url = new URL(urlString);
 
     // Check if domain is whitelisted
-    const result = (await chrome.storage.sync.get(["whitelist"])) as StorageData;
+    const result = (await browserAPI.storage.sync.get(["whitelist"])) as StorageData;
     const whitelist = result.whitelist || [];
 
     const hostname = url.hostname.toLowerCase();

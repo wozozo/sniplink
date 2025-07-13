@@ -1,7 +1,8 @@
 import { cleanUrl } from "./shared.js";
+import { browserAPI } from "./browserCompat.js";
 
 async function getCurrentTab() {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const [tab] = await browserAPI.tabs.query({ active: true, currentWindow: true });
   return tab;
 }
 
@@ -104,7 +105,7 @@ async function init() {
   if (settingsBtn) {
     settingsBtn.addEventListener("click", (e) => {
       e.preventDefault();
-      chrome.runtime.openOptionsPage();
+      browserAPI.runtime.openOptionsPage();
     });
   }
 
