@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "SnipLink - Clean URL Copier",
+  "short_name": "SnipLink",
+  "version": "1.0.1",
+  "description": "Remove tracking parameters from URLs to create clean, shareable links with one click",
+  "author": "Yoichi Fujimoto",
+  "homepage_url": "https://github.com/wozozo/sniplink",
+  "permissions": [
+    "activeTab",
+    "clipboardWrite",
+    "storage",
+    "contextMenus",
+    "notifications",
+    "tabs"
+  ],
+  "background": {
+    "scripts": ["src/background.js"],
+    "type": "module",
+    "persistent": false
+  },
+  "action": {
+    "default_popup": "src/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_ui": {
+    "page": "src/options.html",
+    "open_in_tab": true
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "sniplink@wozozo.site",
+      "strict_min_version": "109.0"
+    }
+  }
+}
