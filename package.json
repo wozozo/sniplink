@@ -27,7 +27,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.12.1",
+  "packageManager": "pnpm@10.15.1",
   "devDependencies": {
     "@biomejs/biome": "^2.0.4",
     "@types/chrome": "^0.0.326",
