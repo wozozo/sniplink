@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "SnipLink - Clean URL Copier",
   "short_name": "SnipLink",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Remove tracking parameters from URLs to create clean, shareable links with one click",
   "author": "Yoichi Fujimoto",
   "homepage_url": "https://github.com/wozozo/sniplink",
