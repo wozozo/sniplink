@@ -139,6 +139,60 @@
           <div class="card-header">
             <div class="card-icon">
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <h2>Domain-Specific Parameters</h2>
+              <p class="card-description">Remove additional parameters for specific domains</p>
+            </div>
+          </div>
+          
+          <div class="card-content">
+            <div class="input-group">
+              <label class="input-label">Domain rules (supports wildcards like *.example.com)</label>
+              <div id="domainParamsList" class="domain-params-list"></div>
+              
+              <div class="domain-param-add">
+                <div class="domain-input-group">
+                  <textarea 
+                    id="newDomains" 
+                    class="textarea small-textarea" 
+                    rows="3" 
+                    placeholder="example.com&#10;*.example.com&#10;another.com"
+                    spellcheck="false"
+                  ></textarea>
+                  <textarea 
+                    id="newDomainParams" 
+                    class="textarea small-textarea" 
+                    rows="3" 
+                    placeholder="param1&#10;param2&#10;tracking_id"
+                    spellcheck="false"
+                  ></textarea>
+                </div>
+                <button id="addDomainParam" class="btn btn-primary">
+                  <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 2V14M2 8H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                  Add Rule
+                </button>
+              </div>
+              
+              <span class="input-hint">These parameters will be removed in addition to global parameters when visiting the specified domains</span>
+            </div>
+            
+            <div class="card-actions">
+              <div id="domainParamsStatus" class="status-message"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card full-width">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9 11H7V13H9V11ZM13 11H11V13H13V11ZM17 11H15V13H17V11ZM19 4H18V2H16V4H8V2H6V4H5C3.89 4 3.01 4.9 3.01 6L3 20C3 21.1 3.89 22 5 22H19C20.1 22 21 21.1 21 20V6C21 4.9 20.1 4 19 4ZM19 20H5V9H19V20Z" fill="currentColor"/>
               </svg>
             </div>

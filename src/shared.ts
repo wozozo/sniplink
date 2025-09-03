@@ -1,6 +1,22 @@
 import { DEFAULT_TRACKING_PARAMS } from "./constants.js";
 import type { CleanUrlResult, StorageData } from "./types.js";
 
+function matchesDomain(hostname: string, domainPattern: string): boolean {
+  const normalizedHostname = hostname.toLowerCase();
+  const normalizedPattern = domainPattern.toLowerCase();
+
+  // Handle wildcard subdomains (*.example.com)
+  if (normalizedPattern.startsWith("*.")) {
+    const baseDomain = normalizedPattern.slice(2);
+    return normalizedHostname === baseDomain || normalizedHostname.endsWith(`.${baseDomain}`);
+  }
+
+  // Exact domain match or subdomain
+  return (
+    normalizedHostname === normalizedPattern || normalizedHostname.endsWith(`.${normalizedPattern}`)
+  );
+}
+
 export async function getTrackingParams(): Promise<string[]> {
   const result = (await chrome.storage.sync.get([
     "customParams",
@@ -15,6 +31,23 @@ export async function getTrackingParams(): Promise<string[]> {
   );
 
   return [...activeDefaultParams, ...customParams];
+}
+
+export async function getDomainSpecificParams(hostname: string): Promise<string[]> {
+  const result = (await chrome.storage.sync.get(["domainParams"])) as StorageData;
+  const domainParams = result.domainParams || [];
+
+  const matchingParams: string[] = [];
+
+  for (const config of domainParams) {
+    // Check if hostname matches any of the domains in the config
+    const hasMatch = config.domains.some((domain) => matchesDomain(hostname, domain));
+    if (hasMatch) {
+      matchingParams.push(...config.params);
+    }
+  }
+
+  return matchingParams;
 }
 
 export async function cleanUrl(urlString: string): Promise<CleanUrlResult> {
@@ -68,9 +101,11 @@ export async function cleanUrl(urlString: string): Promise<CleanUrlResult> {
 
     const params = new URLSearchParams(url.search);
     const trackingParams = await getTrackingParams();
+    const domainSpecificParams = await getDomainSpecificParams(hostname);
+    const allParams = [...trackingParams, ...domainSpecificParams];
     const removedParams: string[] = [];
 
-    trackingParams.forEach((param) => {
+    allParams.forEach((param) => {
       if (params.has(param)) {
         removedParams.push(`${param}=${params.get(param)}`);
         params.delete(param);
