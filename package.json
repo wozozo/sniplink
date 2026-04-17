@@ -33,7 +33,7 @@
     "@types/chrome": "^0.0.326",
     "@vitest/ui": "^3.2.4",
     "jsdom": "^26.1.0",
-    "typescript": "^5.8.3",
+    "typescript": "^6.0.0",
     "vitest": "^3.2.4"
   }
 }
