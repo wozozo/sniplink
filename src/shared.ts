@@ -1,4 +1,4 @@
-import { DEFAULT_TRACKING_PARAMS } from "./constants.js";
+import { DEFAULT_DOMAIN_PARAMS, DEFAULT_TRACKING_PARAMS } from "./constants.js";
 import type { CleanUrlResult, StorageData } from "./types.js";
 
 function matchesDomain(hostname: string, domainPattern: string): boolean {
@@ -39,7 +39,7 @@ export async function getDomainSpecificParams(hostname: string): Promise<string[
 
   const matchingParams: string[] = [];
 
-  for (const config of domainParams) {
+  for (const config of [...DEFAULT_DOMAIN_PARAMS, ...domainParams]) {
     // Check if hostname matches any of the domains in the config
     const hasMatch = config.domains.some((domain) => matchesDomain(hostname, domain));
     if (hasMatch) {

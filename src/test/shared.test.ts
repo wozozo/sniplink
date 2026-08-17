@@ -157,6 +157,45 @@ describe("shared utilities", () => {
       expect(result.error).toBeNull();
     });
 
+    it("should remove s and t params on x.com", async () => {
+      const result = await cleanUrl("https://x.com/user/status/123?s=20&t=abc");
+
+      expect(result.cleanUrl).toBe("https://x.com/user/status/123");
+      expect(result.removedParams).toContain("s=20");
+      expect(result.removedParams).toContain("t=abc");
+      expect(result.error).toBeNull();
+    });
+
+    it("should keep s param on other domains", async () => {
+      const result = await cleanUrl("https://example.com/?s=query");
+
+      expect(result.cleanUrl).toBe("https://example.com/?s=query");
+      expect(result.removedParams).toEqual([]);
+      expect(result.error).toBeNull();
+    });
+
+    it("should remove Substack tracking params", async () => {
+      const result = await cleanUrl(
+        "https://simonw.substack.com/p/qwen-38-27b-is-excellent-but-it-defaults?utm_source=post-email-title&publication_id=1173386&post_id=211490758&utm_campaign=email-post-title&isFreemail=true&r=69ff1&triedRedirect=true&utm_medium=email",
+      );
+
+      expect(result.cleanUrl).toBe(
+        "https://simonw.substack.com/p/qwen-38-27b-is-excellent-but-it-defaults",
+      );
+      expect(result.removedParams).toContain("publication_id=1173386");
+      expect(result.removedParams).toContain("post_id=211490758");
+      expect(result.removedParams).toContain("r=69ff1");
+      expect(result.error).toBeNull();
+    });
+
+    it("should keep r param on other domains", async () => {
+      const result = await cleanUrl("https://example.com/?r=value");
+
+      expect(result.cleanUrl).toBe("https://example.com/?r=value");
+      expect(result.removedParams).toEqual([]);
+      expect(result.error).toBeNull();
+    });
+
     it("should not add tag parameter when Amazon Associate ID is not set", async () => {
       vi.mocked(chrome.storage.sync.get).mockImplementation(async () => ({}));
 

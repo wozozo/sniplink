@@ -1,3 +1,5 @@
+import type { DomainParamConfig } from "./types.js";
+
 export const DEFAULT_TRACKING_PARAMS = [
   "utm_source",
   "utm_medium",
@@ -46,3 +48,9 @@ export const DEFAULT_TRACKING_PARAMS = [
   "isFreemail",
   "triedRedirect",
 ] as const;
+
+// Params too generic to remove globally, so they are scoped to specific domains
+export const DEFAULT_DOMAIN_PARAMS: DomainParamConfig[] = [
+  { domains: ["x.com", "twitter.com"], params: ["s", "t"] },
+  { domains: ["substack.com"], params: ["publication_id", "post_id", "r"] },
+];
