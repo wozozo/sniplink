@@ -176,15 +176,13 @@ describe("shared utilities", () => {
 
     it("should remove Substack tracking params", async () => {
       const result = await cleanUrl(
-        "https://simonw.substack.com/p/qwen-38-27b-is-excellent-but-it-defaults?utm_source=post-email-title&publication_id=1173386&post_id=211490758&utm_campaign=email-post-title&isFreemail=true&r=69ff1&triedRedirect=true&utm_medium=email",
+        "https://example.substack.com/p/sample-post?utm_source=post-email-title&publication_id=1234567&post_id=987654&utm_campaign=email-post-title&isFreemail=true&r=abc12&triedRedirect=true&utm_medium=email",
       );
 
-      expect(result.cleanUrl).toBe(
-        "https://simonw.substack.com/p/qwen-38-27b-is-excellent-but-it-defaults",
-      );
-      expect(result.removedParams).toContain("publication_id=1173386");
-      expect(result.removedParams).toContain("post_id=211490758");
-      expect(result.removedParams).toContain("r=69ff1");
+      expect(result.cleanUrl).toBe("https://example.substack.com/p/sample-post");
+      expect(result.removedParams).toContain("publication_id=1234567");
+      expect(result.removedParams).toContain("post_id=987654");
+      expect(result.removedParams).toContain("r=abc12");
       expect(result.error).toBeNull();
     });
 
@@ -193,6 +191,17 @@ describe("shared utilities", () => {
 
       expect(result.cleanUrl).toBe("https://example.com/?r=value");
       expect(result.removedParams).toEqual([]);
+      expect(result.error).toBeNull();
+    });
+
+    it("should remove Instagram tracking params", async () => {
+      const result = await cleanUrl(
+        "https://www.instagram.com/p/ABC123abc/?img_index=1&igsh=c2FtcGxlaWdzaA%3D%3D",
+      );
+
+      expect(result.cleanUrl).toBe("https://www.instagram.com/p/ABC123abc/");
+      expect(result.removedParams).toContain("img_index=1");
+      expect(result.removedParams).toContain("igsh=c2FtcGxlaWdzaA==");
       expect(result.error).toBeNull();
     });
 
