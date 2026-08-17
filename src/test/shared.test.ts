@@ -157,6 +157,54 @@ describe("shared utilities", () => {
       expect(result.error).toBeNull();
     });
 
+    it("should remove s and t params on x.com", async () => {
+      const result = await cleanUrl("https://x.com/user/status/123?s=20&t=abc");
+
+      expect(result.cleanUrl).toBe("https://x.com/user/status/123");
+      expect(result.removedParams).toContain("s=20");
+      expect(result.removedParams).toContain("t=abc");
+      expect(result.error).toBeNull();
+    });
+
+    it("should keep s param on other domains", async () => {
+      const result = await cleanUrl("https://example.com/?s=query");
+
+      expect(result.cleanUrl).toBe("https://example.com/?s=query");
+      expect(result.removedParams).toEqual([]);
+      expect(result.error).toBeNull();
+    });
+
+    it("should remove Substack tracking params", async () => {
+      const result = await cleanUrl(
+        "https://example.substack.com/p/sample-post?utm_source=post-email-title&publication_id=1234567&post_id=987654&utm_campaign=email-post-title&isFreemail=true&r=abc12&triedRedirect=true&utm_medium=email",
+      );
+
+      expect(result.cleanUrl).toBe("https://example.substack.com/p/sample-post");
+      expect(result.removedParams).toContain("publication_id=1234567");
+      expect(result.removedParams).toContain("post_id=987654");
+      expect(result.removedParams).toContain("r=abc12");
+      expect(result.error).toBeNull();
+    });
+
+    it("should keep r param on other domains", async () => {
+      const result = await cleanUrl("https://example.com/?r=value");
+
+      expect(result.cleanUrl).toBe("https://example.com/?r=value");
+      expect(result.removedParams).toEqual([]);
+      expect(result.error).toBeNull();
+    });
+
+    it("should remove Instagram tracking params", async () => {
+      const result = await cleanUrl(
+        "https://www.instagram.com/p/ABC123abc/?img_index=1&igsh=c2FtcGxlaWdzaA%3D%3D",
+      );
+
+      expect(result.cleanUrl).toBe("https://www.instagram.com/p/ABC123abc/");
+      expect(result.removedParams).toContain("img_index=1");
+      expect(result.removedParams).toContain("igsh=c2FtcGxlaWdzaA==");
+      expect(result.error).toBeNull();
+    });
+
     it("should not add tag parameter when Amazon Associate ID is not set", async () => {
       vi.mocked(chrome.storage.sync.get).mockImplementation(async () => ({}));
 
