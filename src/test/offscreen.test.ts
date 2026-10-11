@@ -18,7 +18,7 @@ describe("offscreen script", () => {
       </html>
     `);
     document = dom.window.document;
-    global.document = document as unknown as Document;
+    vi.stubGlobal("document", document);
 
     // Mock chrome.runtime.onMessage
     global.chrome = {
@@ -41,6 +41,7 @@ describe("offscreen script", () => {
 
   afterEach(() => {
     vi.resetModules();
+    vi.unstubAllGlobals();
     vi.clearAllMocks();
   });
 
