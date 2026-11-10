@@ -10,8 +10,27 @@ async function copyToClipboard(text: string): Promise<boolean> {
     await navigator.clipboard.writeText(text);
     return true;
   } catch (err) {
+    // Some browsers (e.g. Vivaldi) open the popup without focus, which makes
+    // the async Clipboard API reject. execCommand works with clipboardWrite.
+    console.warn("navigator.clipboard failed, falling back to execCommand:", err);
+    return copyWithExecCommand(text);
+  }
+}
+
+function copyWithExecCommand(text: string): boolean {
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+  try {
+    return document.execCommand("copy");
+  } catch (err) {
     console.error("Failed to copy:", err);
     return false;
+  } finally {
+    textarea.remove();
   }
 }
 
